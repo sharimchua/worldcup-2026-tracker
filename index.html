@@ -140,15 +140,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .result-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;box-shadow:var(--shadow)}
 
 /* ── GROUPS ── */
-.groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
 .group-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
 .group-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.08em;padding:.55rem 1rem;background:var(--ink);color:var(--gold)}
-.group-team{display:flex;align-items:center;gap:7px;padding:7px 10px;border-bottom:1px solid var(--border)}
-.group-team:last-child{border-bottom:none}
-.group-team.out{opacity:.32}
-.group-team.out .g-name{text-decoration:line-through}
-.g-flag{font-size:15px;width:20px;text-align:center;flex-shrink:0}
-.g-name{font-size:12px;flex:1}
+.group-table{width:100%;border-collapse:collapse;font-size:11px}
+.group-table th{background:var(--bg);color:var(--ink-3);font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:.05em;padding:5px 6px;text-align:left;border-bottom:1px solid var(--border)}
+.group-table th.num, .group-table td.num{text-align:center;padding:5px 4px}
+.group-table td{padding:6px 6px;border-bottom:1px solid var(--border);vertical-align:middle}
+.group-table tr:last-child td{border-bottom:none}
+.group-table tr.out{opacity:.45}
+.group-table tr.out .g-name{text-decoration:line-through}
+.group-pos{font-weight:600;color:var(--ink-3);text-align:center;width:14px}
+.group-team-cell{display:flex;align-items:center;gap:4px;min-width:0}
+.g-flag{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.g-name{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 
 /* ── EMPTY ── */
 .empty{text-align:center;padding:3rem 1rem;color:var(--ink-3);font-size:14px;border:1px dashed var(--border);border-radius:var(--radius)}
@@ -923,27 +928,123 @@ function renderResults() {
 /* ══════════════════════════════════════════════════
    RENDER: GROUPS
 ══════════════════════════════════════════════════ */
+function computeStandings() {
+  const standings = {};
+  ALL_TEAMS.forEach(t => {
+    standings[t.name] = {
+      name: t.name,
+      flag: t.flag,
+      group: t.group,
+      tier: t.tier,
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      pts: 0
+    };
+  });
+
+  MATCHES.forEach(m => {
+    if (m.g && m.s1 !== undefined && m.s2 !== undefined) {
+      const t1 = standings[m.a];
+      const t2 = standings[m.b];
+      if (t1 && t2) {
+        t1.played++;
+        t2.played++;
+        t1.gf += m.s1;
+        t1.ga += m.s2;
+        t2.gf += m.s2;
+        t2.ga += m.s1;
+        t1.gd = t1.gf - t1.ga;
+        t2.gd = t2.gf - t2.ga;
+
+        if (m.s1 > m.s2) {
+          t1.won++;
+          t1.pts += 3;
+          t2.lost++;
+        } else if (m.s2 > m.s1) {
+          t2.won++;
+          t2.pts += 3;
+          t1.lost++;
+        } else {
+          t1.drawn++;
+          t1.pts += 1;
+          t2.drawn++;
+          t2.pts += 1;
+        }
+      }
+    }
+  });
+
+  return standings;
+}
+
 function renderGroups() {
   const el = document.getElementById('page-groups');
   const out = computeKnockedOut();
+  const standings = computeStandings();
   const groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  
   let h = `<div class="groups-grid">`;
+  
   groups.forEach(g => {
-    h += `<div class="group-card"><div class="group-title">Group ${g}</div>`;
-    ALL_TEAMS.filter(t=>t.group===g).forEach(t=>{
-      const owner=getOwner(t.name);
-      const isOut=out.has(t.name);
-      const idx=owner?CFG.members.indexOf(owner):-1;
-      const c=idx>=0?memberColor(idx):null;
-      h += `<div class="group-team${isOut?' out':''}">
-        <span class="g-flag">${t.flag}</span>
-        <span class="g-name">${t.name}</span>
-        <span class="t-badge t${t.tier}" style="font-size:9px">T${t.tier}</span>
-        ${c?`<span class="owner-chip" style="background:${c.bg};color:${c.chip}">${owner.substring(0,3)}</span>`:''}
-      </div>`;
+    const teamsInGroup = ALL_TEAMS.filter(t => t.group === g).map(t => standings[t.name]);
+    
+    teamsInGroup.sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      if (b.gd !== a.gd) return b.gd - a.gd;
+      if (b.gf !== a.gf) return b.gf - a.gf;
+      return a.name.localeCompare(b.name);
     });
-    h += `</div>`;
+
+    h += `<div class="group-card">
+      <div class="group-title">Group ${g}</div>
+      <table class="group-table">
+        <thead>
+          <tr>
+            <th style="width: 14px;"></th>
+            <th>Team</th>
+            <th class="num" title="Played">P</th>
+            <th class="num" title="Won-Drawn-Lost">W-D-L</th>
+            <th class="num" title="Goal Difference">GD</th>
+            <th class="num" title="Points">PTS</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    teamsInGroup.forEach((t, index) => {
+      const owner = getOwner(t.name);
+      const isOut = out.has(t.name);
+      const idx = owner ? CFG.members.indexOf(owner) : -1;
+      const c = idx >= 0 ? memberColor(idx) : null;
+      
+      const gdSign = t.gd > 0 ? '+' : '';
+      
+      h += `<tr class="${isOut ? 'out' : ''}">
+        <td class="group-pos">${index + 1}</td>
+        <td>
+          <div class="group-team-cell">
+            <span class="g-flag">${t.flag}</span>
+            <span class="g-name" title="${t.name}">${t.name}</span>
+            <span class="t-badge t${t.tier}" style="font-size:9px">T${t.tier}</span>
+            ${c ? `<span class="owner-chip" style="background:${c.bg};color:${c.chip}">${owner.substring(0,3)}</span>` : ''}
+          </div>
+        </td>
+        <td class="num">${t.played}</td>
+        <td class="num" style="white-space: nowrap;">${t.won}-${t.drawn}-${t.lost}</td>
+        <td class="num">${gdSign}${t.gd}</td>
+        <td class="num" style="font-weight: 700; color: var(--ink);">${t.pts}</td>
+      </tr>`;
+    });
+
+    h += `</tbody>
+      </table>
+    </div>`;
   });
+
   h += `</div>`;
   el.innerHTML = h;
 }
