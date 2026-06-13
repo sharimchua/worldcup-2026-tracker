@@ -670,7 +670,8 @@ const REVEALED_SET = new Set(REVEALED_MATCHES);
 let REVEAL_ALL = localStorage.getItem('wc_reveal_all') === 'true';
 
 function getMatchKey(m) {
-  return `${m.d}_${m.a}_${m.b}`.replace(/\s+/g, '_');
+  const dateStr = m.od || m.d;
+  return `${dateStr}_${m.a}_${m.b}`.replace(/\s+/g, '_');
 }
 
 function isMatchRevealed(m) {
@@ -1573,7 +1574,7 @@ function renderCal(forceScroll = false) {
     return true;
   }).map(m => {
     const { d, t } = getMatchDateTimeInTimezone(m, CAL_TZ);
-    return { ...m, d, t };
+    return { ...m, d, t, od: m.d };
   });
 
   const byDay = {};
@@ -1692,7 +1693,7 @@ function renderResults() {
   const scored = MATCHES.filter(m=>m.s1!==undefined)
     .map(m => {
       const { d, t } = getMatchDateTimeInTimezone(m, CAL_TZ);
-      return { ...m, d, t };
+      return { ...m, d, t, od: m.d };
     })
     .sort((a,b)=>b.d.localeCompare(a.d)||b.t.localeCompare(a.t));
 
