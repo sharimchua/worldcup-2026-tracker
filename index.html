@@ -77,19 +77,180 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .copy-btn.copied{background:var(--green-l);border-color:var(--green);color:var(--green-d)}
 
 /* ── METRICS ── */
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
-.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center}
-.metric-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--ink);line-height:1}
-.metric-lbl{font-size:11px;color:var(--ink-3);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform 0.2s ease}
+.metric:hover{transform:translateY(-2px)}
+.metric-val{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--ink);line-height:1}
+.metric-lbl{font-size:11px;color:var(--ink-3);margin-top:4px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.metric.m-alive { border-top: 4px solid #10b981; }
+.metric.m-elim { border-top: 4px solid #f43f5e; }
+.metric.m-played { border-top: 4px solid #6366f1; }
+.metric.m-togo { border-top: 4px solid #f59e0b; }
 
-/* ── TIER LEGEND ── */
+/* ── MEMBER STANDINGS LEADERBOARD ── */
+.leaderboard-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.leaderboard-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.leaderboard-table-wrapper {
+  overflow-x: auto;
+}
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.leaderboard-table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--ink-3);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+.leaderboard-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.leaderboard-table tr:last-child td {
+  border-bottom: none;
+}
+.leaderboard-rank {
+  font-weight: 700;
+  width: 30px;
+  color: var(--ink-2);
+}
+.leaderboard-member {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.leaderboard-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.leaderboard-pts {
+  font-weight: 700;
+  color: var(--green);
+}
+.leaderboard-gd {
+  font-weight: 600;
+}
+
+/* ── TOURNAMENT INSIGHTS ── */
+.insights-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  margin: 2rem 0 0.75rem 0;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+.insights-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+.insights-card h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.insight-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+}
+.insight-team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+.insight-val {
+  font-weight: 600;
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+}
+
 .tier-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
-.t-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.t-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;flex-shrink:0}
 .t1{background:#ede9fe;color:#4c1d95}.t2{background:#dcfce7;color:#14532d}
 .t3{background:#fff7ed;color:#7c2d12}.t4{background:#fef2f2;color:#7f1d1d}
 
 /* ── MEMBER CARDS ── */
-.member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.member-grid{display:grid;gap:16px}
+.member-grid:not([class*="cols-"]){grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+
+.member-grid.cols-2{grid-template-columns:1fr}
+@media (min-width:600px){.member-grid.cols-2{grid-template-columns:repeat(2,1fr)}}
+
+.member-grid.cols-3{grid-template-columns:1fr}
+@media (min-width:768px){.member-grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+
+.member-grid.cols-4{grid-template-columns:1fr}
+@media (min-width:580px){.member-grid.cols-4{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:992px){.member-grid.cols-4{grid-template-columns:repeat(4,1fr)}}
+
+.member-grid.cols-5,
+.member-grid.cols-6,
+.member-grid.cols-7,
+.member-grid.cols-8{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+
+.member-header-stats{display:flex;gap:8px;font-size:11px;color:var(--ink-3);margin-top:4px}
+.member-header-badge{background:var(--bg);padding:1px 6px;border-radius:4px;border:1px solid var(--border)}
+.team-row-stats{font-size:10px;color:var(--ink-3);margin-left:auto;margin-right:8px;background:rgba(0,0,0,0.03);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace}
+.member-scorers-box{background:var(--bg);border-top:1px solid var(--border);padding:8px 12px;font-size:11px;color:var(--ink-2)}
+.member-scorers-title{font-weight:600;color:var(--ink-3);font-size:10px;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.member-scorers-list{font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .member-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
 .member-card-header{padding:.9rem 1.1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
 .avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
@@ -394,6 +555,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   #data-src{display:none}
   .share-url{max-width:160px}
   .hdr-select {max-width: 100px;}
+  .tier-legend {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+  .tier-legend .t-badge {
+    text-align: center;
+    font-size: 10px;
+    padding: 3px 6px;
+  }
 }
 </style>
 </head>
@@ -809,12 +981,11 @@ function isRealTeam(name) {
 function computeKnockedOut() {
   const out = new Set();
 
-  // Knockout rounds: loser of any scored match is out
-  MATCHES.filter(m => KO_ROUNDS.includes(m.r) && m.s1 !== undefined && isRealTeam(m.a) && isRealTeam(m.b))
+  // Knockout rounds: loser of any scored match is out (only if revealed)
+  MATCHES.filter(m => KO_ROUNDS.includes(m.r) && m.s1 !== undefined && isMatchRevealed(m) && isRealTeam(m.a) && isRealTeam(m.b))
     .forEach(m => {
       if (m.s1 > m.s2) out.add(m.b);
       else if (m.s2 > m.s1) out.add(m.a);
-      // draws shouldn't happen in KO but if they do, leave both in for now
     });
 
   // Group stage: once all 3 matchdays for a group are complete AND the Round of 32
@@ -825,25 +996,166 @@ function computeKnockedOut() {
   MATCHES.filter(m => m.r === 'Round of 32' && isRealTeam(m.b)).forEach(m => advanced.add(m.b));
 
   if (advanced.size > 0) {
-    // For each group where at least one R32 slot is resolved, check which teams didn't advance
     const groupTeams = {};
     ALL_TEAMS.forEach(t => { if (!groupTeams[t.group]) groupTeams[t.group] = []; groupTeams[t.group].push(t.name); });
 
-    // A group is "resolved" if all 3 matchdays are played (6 matches all scored)
+    // A group is "resolved" if all 3 matchdays are played and revealed
     const groupMatchdays = {};
     MATCHES.filter(m => m.g).forEach(m => {
       if (!groupMatchdays[m.g]) groupMatchdays[m.g] = 0;
-      if (m.s1 !== undefined) groupMatchdays[m.g]++;
+      if (m.s1 !== undefined && isMatchRevealed(m)) groupMatchdays[m.g]++;
     });
 
     Object.entries(groupTeams).forEach(([g, teams]) => {
       const played = groupMatchdays[g] || 0;
-      if (played < 6) return; // group not complete yet
+      if (played < 6) return; // group not complete or not fully revealed yet
       teams.forEach(name => { if (!advanced.has(name)) out.add(name); });
     });
   }
 
   return out;
+}
+
+/* ══════════════════════════════════════════════════
+   STATS COMPILATION (GF, GA, W-D-L, Scorers)
+══════════════════════════════════════════════════ */
+function compileStats() {
+  const teamStats = {};
+  ALL_TEAMS.forEach(t => {
+    teamStats[t.name] = {
+      name: t.name,
+      flag: t.flag,
+      tier: t.tier,
+      group: t.group,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      played: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      scorers: {}
+    };
+  });
+
+  const out = computeKnockedOut();
+  let unrevealedCount = 0;
+
+  MATCHES.forEach(m => {
+    if (m.s1 === undefined || m.s2 === undefined) return; // not played yet
+
+    if (!isMatchRevealed(m)) {
+      unrevealedCount++;
+      return;
+    }
+
+    const t1 = m.a;
+    const t2 = m.b;
+
+    if (teamStats[t1]) {
+      teamStats[t1].played++;
+      teamStats[t1].gf += m.s1;
+      teamStats[t1].ga += m.s2;
+      if (m.goals1) {
+        m.goals1.forEach(g => {
+          if (g && g.name) {
+            teamStats[t1].scorers[g.name] = (teamStats[t1].scorers[g.name] || 0) + 1;
+          }
+        });
+      }
+    }
+
+    if (teamStats[t2]) {
+      teamStats[t2].played++;
+      teamStats[t2].gf += m.s2;
+      teamStats[t2].ga += m.s1;
+      if (m.goals2) {
+        m.goals2.forEach(g => {
+          if (g && g.name) {
+            teamStats[t2].scorers[g.name] = (teamStats[t2].scorers[g.name] || 0) + 1;
+          }
+        });
+      }
+    }
+
+    let w1 = false, w2 = false, d = false;
+    if (m.s1 > m.s2) {
+      w1 = true;
+    } else if (m.s2 > m.s1) {
+      w2 = true;
+    } else {
+      if (m.p1 !== undefined && m.p2 !== undefined) {
+        if (m.p1 > m.p2) w1 = true;
+        else w2 = true;
+      } else {
+        d = true;
+      }
+    }
+
+    if (w1) {
+      if (teamStats[t1]) teamStats[t1].wins++;
+      if (teamStats[t2]) teamStats[t2].losses++;
+    } else if (w2) {
+      if (teamStats[t1]) teamStats[t1].losses++;
+      if (teamStats[t2]) teamStats[t2].wins++;
+    } else if (d) {
+      if (teamStats[t1]) teamStats[t1].draws++;
+      if (teamStats[t2]) teamStats[t2].draws++;
+    }
+  });
+
+  ALL_TEAMS.forEach(t => {
+    if (teamStats[t.name]) {
+      teamStats[t.name].gd = teamStats[t.name].gf - teamStats[t.name].ga;
+    }
+  });
+
+  const memberStats = {};
+  CFG.members.forEach(m => {
+    memberStats[m] = {
+      name: m,
+      teamsAlive: 0,
+      totalTeams: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      played: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      pts: 0,
+      scorers: {}
+    };
+  });
+
+  CFG.members.forEach(m => {
+    const teams = ALLOC[m] || [];
+    const stats = memberStats[m];
+    stats.totalTeams = teams.length;
+
+    teams.forEach(tn => {
+      if (!out.has(tn)) {
+        stats.teamsAlive++;
+      }
+      const ts = teamStats[tn];
+      if (ts) {
+        stats.wins += ts.wins;
+        stats.draws += ts.draws;
+        stats.losses += ts.losses;
+        stats.played += ts.played;
+        stats.gf += ts.gf;
+        stats.ga += ts.ga;
+        stats.pts += (ts.wins * 3) + (ts.draws * 1);
+        
+        Object.entries(ts.scorers).forEach(([pName, count]) => {
+          stats.scorers[pName] = (stats.scorers[pName] || 0) + count;
+        });
+      }
+    });
+    stats.gd = stats.gf - stats.ga;
+  });
+
+  return { teamStats, memberStats, unrevealedCount };
 }
 
 /* ══════════════════════════════════════════════════
@@ -953,6 +1265,8 @@ function setupGo() {
 function renderDash() {
   const el = document.getElementById('page-dash');
   if (!CFG.members.length) { el.innerHTML=''; return; }
+  
+  const { teamStats, memberStats, unrevealedCount } = compileStats();
   const out = computeKnockedOut();
   const allAlive = ALL_TEAMS.filter(t=>!out.has(t.name)).length;
   const scored   = MATCHES.filter(m=>m.s1!==undefined).length;
@@ -961,7 +1275,24 @@ function renderDash() {
 
   // Share banner
   const url = shareURL();
-  let h = `<div class="share-banner">
+  let h = ``;
+
+  if (unrevealedCount > 0) {
+    h += `<div class="status-note" style="margin-bottom:1.5rem; background:var(--gold-l); border:1px solid var(--gold); padding:0.9rem 1.1rem; border-radius:var(--radius); display:flex; align-items:center; justify-content:space-between; gap:12px; font-style:normal; flex-wrap:wrap">
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-size:16px">⚠️</span>
+        <span style="font-size:13px; font-weight:500; color:var(--ink)">
+          <strong>Spoiler Protection:</strong> ${unrevealedCount} match results have been played but are currently hidden.
+        </span>
+      </div>
+      <div style="display:flex; gap:8px">
+        <button class="reveal-btn" onclick="revealAllScores()" style="padding:4px 10px; font-size:11px">👁️ Reveal All</button>
+        <button class="spoilers-btn" onclick="showTab('cal')" style="padding:4px 10px; font-size:11px; height:auto; border-radius:4px">Go to Calendar</button>
+      </div>
+    </div>`;
+  }
+
+  h += `<div class="share-banner">
     <div>
       <div class="share-label">Seed</div>
       <div class="share-seed">${CFG.seed}</div>
@@ -974,12 +1305,62 @@ function renderDash() {
   </div>`;
 
   h += `<div class="metrics">
-    <div class="metric"><div class="metric-val">${allAlive}</div><div class="metric-lbl">Teams still in</div></div>
-    <div class="metric"><div class="metric-val">${ALL_TEAMS.length-allAlive}</div><div class="metric-lbl">Eliminated</div></div>
-    <div class="metric"><div class="metric-val">${scored}</div><div class="metric-lbl">Matches played</div></div>
-    <div class="metric"><div class="metric-val">${104-scored}</div><div class="metric-lbl">To go</div></div>
-  </div>
-  <div class="tier-legend">
+    <div class="metric m-alive"><div class="metric-val">${allAlive}</div><div class="metric-lbl">Teams still in</div></div>
+    <div class="metric m-elim"><div class="metric-val">${ALL_TEAMS.length-allAlive}</div><div class="metric-lbl">Eliminated</div></div>
+    <div class="metric m-played"><div class="metric-val">${scored}</div><div class="metric-lbl">Matches played</div></div>
+    <div class="metric m-togo"><div class="metric-val">${104-scored}</div><div class="metric-lbl">To go</div></div>
+  </div>`;
+
+  // Member Standings Leaderboard
+  const sortedMembers = [...CFG.members].sort((a, b) => {
+    const sa = memberStats[a];
+    const sb = memberStats[b];
+    if (sa.teamsAlive !== sb.teamsAlive) return sb.teamsAlive - sa.teamsAlive;
+    if (sa.pts !== sb.pts) return sb.pts - sa.pts;
+    if (sa.gd !== sb.gd) return sb.gd - sa.gd;
+    return sb.gf - sa.gf;
+  });
+
+  h += `<div class="leaderboard-card">
+    <h3>🏆 Member Standings</h3>
+    <div class="leaderboard-table-wrapper">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Member</th>
+            <th style="text-align:center">Teams Remaining</th>
+            <th style="text-align:center">Record (W-D-L)</th>
+            <th style="text-align:center">Pts</th>
+            <th style="text-align:center">GF</th>
+            <th style="text-align:center">GD</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  sortedMembers.forEach((m, idx) => {
+    const stats = memberStats[m];
+    const mIdx = CFG.members.indexOf(m);
+    const c = memberColor(mIdx);
+    const gdStyle = stats.gd > 0 ? 'color:#1a7a4a;font-weight:700' : (stats.gd < 0 ? 'color:#c0392b;font-weight:700' : 'color:var(--ink-2)');
+    h += `<tr>
+      <td class="leaderboard-rank">#${idx + 1}</td>
+      <td>
+        <div class="leaderboard-member">
+          <div class="leaderboard-avatar" style="background:${c.bg};color:${c.chip}">${memberInitials(m)}</div>
+          <span>${m}</span>
+        </div>
+      </td>
+      <td style="text-align:center;font-weight:600">${stats.teamsAlive} <span style="color:var(--ink-3);font-weight:400;font-size:11px">/ ${stats.totalTeams}</span></td>
+      <td style="text-align:center;color:var(--ink-2)">${stats.wins}-${stats.draws}-${stats.losses}</td>
+      <td style="text-align:center" class="leaderboard-pts">${stats.pts}</td>
+      <td style="text-align:center;color:var(--ink-2)">${stats.gf}</td>
+      <td style="text-align:center;font-family:'DM Mono',monospace;${gdStyle}">${stats.gd > 0 ? '+' + stats.gd : stats.gd}</td>
+    </tr>`;
+  });
+  h += `</tbody></table></div></div>`;
+
+  h += `<div class="tier-legend">
     <span class="t-badge t1">Tier 1 · Elite</span>
     <span class="t-badge t2">Tier 2 · Strong</span>
     <span class="t-badge t3">Tier 3 · Competitive</span>
@@ -993,21 +1374,27 @@ function renderDash() {
     h += `<p class="status-note" style="margin-bottom:1rem">🗓 Tournament hasn't started yet. Eliminations will update automatically as results come in — just hit Refresh.</p>`;
   }
 
-  h += `<div class="member-grid">`;
+  // Member Grid
+  h += `<div class="member-grid cols-${CFG.members.length}">`;
   CFG.members.forEach((m, idx) => {
     const c = memberColor(idx);
     const teams = ALLOC[m] || [];
     const alive = teams.filter(t=>!out.has(t)).length;
     const total = teams.length;
     const pct = total ? Math.round((alive/total)*100) : 0;
+    const stats = memberStats[m];
 
     h += `<div class="member-card">
-      <div class="member-card-header">
+      <div class="member-card-header" style="border-top: 4px solid ${c.chip}">
         <div class="avatar" style="background:${c.bg};color:${c.chip}">${memberInitials(m)}</div>
-        <div style="flex:1">
+        <div style="flex:1;min-width:0">
           <div class="member-name">${m}</div>
-          <div class="member-stat">${alive} of ${total} teams remaining · ${pct}%</div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c.chip}"></div></div>
+          <div class="member-header-stats">
+            <span class="member-header-badge">${stats.pts} pts</span>
+            <span>${alive}/${total} alive</span>
+            <span>${stats.wins}W-${stats.draws}D-${stats.losses}L</span>
+          </div>
+          <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${pct}%;background:${c.chip}"></div></div>
         </div>
       </div>
       <div class="team-list">`;
@@ -1015,22 +1402,130 @@ function renderDash() {
     teams.forEach(tn => {
       const t = getTeam(tn); if (!t) return;
       const isOut = out.has(tn);
-      // Group stage: team may be "status unknown" (group not complete yet)
       const grpMatches = MATCHES.filter(m=>m.g===t.group && m.s1!==undefined).length;
       const grpPending = grpMatches < 6;
       const dotClass = isOut ? 'dot-out' : (grpPending && grpMatches > 0 ? 'dot-tbd' : 'dot-in');
+      const ts = teamStats[tn] || { wins: 0, draws: 0, losses: 0, gf: 0 };
 
       h += `<div class="team-row${isOut?' out':''}">
         <span class="team-flag">${t.flag}</span>
-        <span class="team-name">${t.name}</span>
-        <span class="t-badge t${t.tier}" style="font-size:10px">T${t.tier}</span>
+        <span class="team-name" title="${t.name}">${t.name}</span>
+        <span class="team-row-stats">${ts.wins}W-${ts.draws}D-${ts.losses}L · ⚽${ts.gf}</span>
+        <span class="t-badge t${t.tier}" style="font-size:10px;flex-shrink:0">T${t.tier}</span>
         <span class="sdot ${dotClass}" title="${isOut?'Eliminated':(grpPending&&grpMatches>0?'Group in progress':'Active')}"></span>
       </div>`;
     });
 
-    h += `</div></div>`;
+    h += `</div>`; // Close team-list
+
+    // Scorers list for this member
+    const mScorers = Object.entries(stats.scorers)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, count]) => `${name} (${count})`)
+      .join(', ');
+
+    h += `<div class="member-scorers-box">
+      <div class="member-scorers-title">⭐ Top Scorers</div>
+      <div class="member-scorers-list" title="${mScorers || 'No goals scored yet'}">
+        ${mScorers || 'No goals scored yet'}
+      </div>
+    </div>`;
+
+    h += `</div>`; // Close member-card
   });
-  h += `</div>`;
+  h += `</div>`; // Close member-grid
+
+  // Global Tournament Insights
+  const globalScorers = {};
+  ALL_TEAMS.forEach(t => {
+    const ts = teamStats[t.name];
+    if (ts && ts.scorers) {
+      Object.entries(ts.scorers).forEach(([pName, count]) => {
+        globalScorers[pName] = (globalScorers[pName] || 0) + count;
+      });
+    }
+  });
+  const topScorers = Object.entries(globalScorers)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  const topAttacks = ALL_TEAMS.map(t => ({
+    name: t.name,
+    flag: t.flag,
+    gf: teamStats[t.name] ? teamStats[t.name].gf : 0
+  }))
+  .sort((a, b) => b.gf - a.gf)
+  .slice(0, 3);
+
+  const topDefences = ALL_TEAMS.map(t => ({
+    name: t.name,
+    flag: t.flag,
+    ga: teamStats[t.name] ? teamStats[t.name].ga : 0,
+    played: teamStats[t.name] ? teamStats[t.name].played : 0
+  }))
+  .filter(t => t.played > 0)
+  .sort((a, b) => a.ga - b.ga)
+  .slice(0, 3);
+
+  h += `<h3 class="insights-title">🏆 Tournament Insights</h3>
+  <div class="insights-grid">
+    <div class="insights-card">
+      <h4>⚽ Golden Boot (Top Scorers)</h4>
+      <div class="insights-list">`;
+      
+  if (topScorers.length > 0) {
+    topScorers.forEach(([pName, count]) => {
+      let pFlag = '⚽';
+      for (const t of ALL_TEAMS) {
+        if (teamStats[t.name] && teamStats[t.name].scorers[pName]) {
+          pFlag = t.flag;
+          break;
+        }
+      }
+      h += `<div class="insight-item">
+        <div class="insight-team"><span>${pFlag}</span><span>${pName}</span></div>
+        <div class="insight-val">${count} goals</div>
+      </div>`;
+    });
+  } else {
+    h += `<div class="insight-item" style="color:var(--ink-3);font-style:italic">No goals scored yet</div>`;
+  }
+  
+  h += `</div></div>
+    <div class="insights-card">
+      <h4>🔥 High-Octane Teams</h4>
+      <div class="insights-list">`;
+      
+  if (topAttacks.some(t => t.gf > 0)) {
+    topAttacks.forEach(t => {
+      h += `<div class="insight-item">
+        <div class="insight-team"><span>${t.flag}</span><span>${t.name}</span></div>
+        <div class="insight-val">${t.gf} goals</div>
+      </div>`;
+    });
+  } else {
+    h += `<div class="insight-item" style="color:var(--ink-3);font-style:italic">No matches played yet</div>`;
+  }
+  
+  h += `</div></div>
+    <div class="insights-card">
+      <h4>🛡️ Rock-Solid Defences</h4>
+      <div class="insights-list">`;
+      
+  if (topDefences.length > 0) {
+    topDefences.forEach(t => {
+      h += `<div class="insight-item">
+        <div class="insight-team"><span>${t.flag}</span><span>${t.name}</span></div>
+        <div class="insight-val">${t.ga} conceded (${t.played} gp)</div>
+      </div>`;
+    });
+  } else {
+    h += `<div class="insight-item" style="color:var(--ink-3);font-style:italic">No matches played yet</div>`;
+  }
+  
+  h += `</div></div></div>`;
+
   el.innerHTML = h;
 }
 
