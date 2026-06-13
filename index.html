@@ -1270,9 +1270,9 @@ function renderDash() {
   const { teamStats, memberStats, unrevealedCount } = compileStats();
   const out = computeKnockedOut();
   const allAlive = ALL_TEAMS.filter(t=>!out.has(t.name)).length;
-  const scored   = MATCHES.filter(m=>m.s1!==undefined).length;
-  const groupsDone = MATCHES.filter(m=>m.g&&m.s1!==undefined).length;
-  const groupsPending = MATCHES.filter(m=>m.g&&m.s1===undefined).length;
+  const scored   = MATCHES.filter(m=>m.s1!==undefined && isMatchRevealed(m)).length;
+  const groupsDone = MATCHES.filter(m=>m.g&&m.s1!==undefined && isMatchRevealed(m)).length;
+  const groupsPending = MATCHES.filter(m=>m.g&&(m.s1===undefined || !isMatchRevealed(m))).length;
 
   // Share banner
   const url = shareURL();
