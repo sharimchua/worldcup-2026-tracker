@@ -158,6 +158,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{display:inline-block;animation:spin .7s linear infinite}
 
+.hdr-select {
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #ccc;
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color .15s, color .15s;
+  flex-shrink: 0;
+  outline: none;
+}
+.hdr-select:hover, .hdr-select:focus {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
   .metrics{grid-template-columns:repeat(2,1fr)}
@@ -165,6 +183,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   #data-src{display:none}
   .match-team-name{max-width:75px}
   .share-url{max-width:160px}
+  .hdr-select {max-width: 100px;}
 }
 </style>
 </head>
@@ -191,11 +210,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   </div>
 </div>
 
-<!-- ══════════════ MAIN APP ══════════════ -->
 <header class="site-header">
   <h1>⚽ WC <span>2026</span></h1>
   <div class="header-right">
     <span id="data-src"></span>
+    <select class="hdr-select" id="tz-select" onchange="changeTimezone(this.value)">
+      <option value="local-match">Stadium Time</option>
+      <option value="device">Device Time</option>
+      <option value="UTC">UTC / GMT</option>
+      <option value="America/Los_Angeles">Pacific Time (LA, Vancouver)</option>
+      <option value="America/Denver">Mountain Time (Denver)</option>
+      <option value="America/Chicago">Central Time (Chicago)</option>
+      <option value="America/New_York">Eastern Time (NY, Toronto)</option>
+      <option value="America/Sao_Paulo">Brazil (São Paulo)</option>
+      <option value="Europe/London">London / Dublin</option>
+      <option value="Europe/Paris">Central Europe (Paris, Berlin)</option>
+      <option value="Europe/Athens">Eastern Europe (Athens, Cairo)</option>
+      <option value="Asia/Dubai">Gulf Time (Dubai, Riyadh)</option>
+      <option value="Asia/Kolkata">India Time (New Delhi)</option>
+      <option value="Asia/Singapore">Singapore / Manila</option>
+      <option value="Asia/Tokyo">Japan / Korea (Tokyo, Seoul)</option>
+      <option value="Australia/Sydney">Eastern Australia (Sydney)</option>
+      <option value="Pacific/Auckland">New Zealand (Auckland)</option>
+    </select>
     <button class="hdr-btn" onclick="doRefresh()"><span id="ref-icon">↻</span> Refresh</button>
     <button class="hdr-btn" onclick="openSetup()">⚙ Setup</button>
   </div>
@@ -214,6 +251,136 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 <div id="page-groups"  class="page"></div>
 
 <script>
+/* ══════════════════════════════════════════════════
+   TIMEZONE AND CALCULATIONS
+   ══════════════════════════════════════════════════ */
+const VENUE_OFFSETS = {
+  "Mexico City": -6,
+  "Guadalajara (Zapopan)": -6,
+  "Monterrey (Guadalupe)": -6,
+  "Atlanta": -4,
+  "Toronto": -4,
+  "San Francisco Bay Area (Santa Clara)": -7,
+  "Los Angeles (Inglewood)": -7,
+  "Vancouver": -7,
+  "Seattle": -7,
+  "New York/New Jersey (East Rutherford)": -4,
+  "Boston (Foxborough)": -4,
+  "Philadelphia": -4,
+  "Miami (Miami Gardens)": -4,
+  "Dallas (Arlington)": -5,
+  "Houston": -5,
+  "Kansas City": -5
+};
+
+let CAL_TZ = localStorage.getItem('wc_timezone') || 'local-match';
+
+function parseMatchDateTime(dateStr, timeStr, venue) {
+  let timeOnly = "12:00";
+  let offsetStr = "";
+
+  if (timeStr) {
+    const parts = timeStr.trim().split(/\s+/);
+    timeOnly = parts[0];
+    if (parts[1] && parts[1].startsWith('UTC')) {
+      offsetStr = parts[1].substring(3);
+    }
+  }
+
+  if (!offsetStr && venue) {
+    const offset = VENUE_OFFSETS[venue];
+    if (offset !== undefined) {
+      const sign = offset >= 0 ? '+' : '-';
+      offsetStr = sign + String(Math.abs(offset)).padStart(2, '0') + ':00';
+    }
+  } else if (offsetStr) {
+    const sign = offsetStr.startsWith('-') ? '-' : '+';
+    const val = offsetStr.replace(/^[+-]/, '');
+    const num = Math.abs(parseInt(val, 10));
+    offsetStr = sign + String(num).padStart(2, '0') + ':00';
+  } else {
+    offsetStr = 'Z';
+  }
+
+  if (timeOnly.length === 4 && timeOnly.includes(':')) {
+    timeOnly = '0' + timeOnly;
+  }
+
+  return new Date(`${dateStr}T${timeOnly}:00${offsetStr}`);
+}
+
+function getMatchDateTimeInTimezone(m, tz) {
+  if (tz === 'local-match') {
+    const originalTime = (m.t || '').split(' ')[0] || '12:00';
+    return { d: m.d, t: originalTime.substring(0, 5) };
+  }
+  
+  const dateObj = parseMatchDateTime(m.d, m.t, m.v);
+  
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz === 'device' ? undefined : tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    
+    const parts = formatter.formatToParts(dateObj);
+    let year, month, day, hour, minute;
+    for (const part of parts) {
+      if (part.type === 'year') year = part.value;
+      if (part.type === 'month') month = part.value;
+      if (part.type === 'day') day = part.value;
+      if (part.type === 'hour') hour = part.value;
+      if (part.type === 'minute') minute = part.value;
+    }
+    
+    if (hour === '24') hour = '00';
+    
+    return {
+      d: `${year}-${month}-${day}`,
+      t: `${hour}:${minute}`
+    };
+  } catch (e) {
+    console.error("Timezone formatting error, falling back to original", e);
+    const originalTime = (m.t || '').split(' ')[0] || '12:00';
+    return { d: m.d, t: originalTime.substring(0, 5) };
+  }
+}
+
+function getTodayInTimezone(tz) {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  if (tz !== 'device' && tz !== 'local-match') {
+    options.timeZone = tz;
+  }
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const parts = formatter.formatToParts(new Date());
+    let year, month, day;
+    for (const part of parts) {
+      if (part.type === 'year') year = part.value;
+      if (part.type === 'month') month = part.value;
+      if (part.type === 'day') day = part.value;
+    }
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
+function changeTimezone(tz) {
+  CAL_TZ = tz;
+  localStorage.setItem('wc_timezone', tz);
+  
+  const sel = document.getElementById('tz-select');
+  if (sel) sel.value = tz;
+
+  render();
+}
+
 /* ══════════════════════════════════════════════════
    TEAM DATA
 ══════════════════════════════════════════════════ */
@@ -453,7 +620,7 @@ async function doRefresh() {
     if (!r.ok) throw new Error('HTTP '+r.status);
     const d = await r.json();
     MATCHES = d.matches.map(m=>({
-      r:m.round, d:m.date, t:(m.time||'').substring(0,5),
+      r:m.round, d:m.date, t:m.time||'',
       a:norm(m.team1), b:norm(m.team2),
       g:(m.group||'').replace('Group ',''),
       v:m.ground||'',
@@ -627,7 +794,7 @@ let CAL_MEMBER='all', CAL_ROUND='all', CAL_SCORES=true;
 
 function renderCal() {
   const el = document.getElementById('page-cal');
-  const today = new Date().toISOString().slice(0,10);
+  const today = getTodayInTimezone(CAL_TZ);
   const out = computeKnockedOut();
   const myTeams = CAL_MEMBER!=='all' ? new Set(ALLOC[CAL_MEMBER]||[]) : null;
   const rounds = [...new Set(MATCHES.map(m=>m.r))];
@@ -637,6 +804,9 @@ function renderCal() {
     if (!CAL_SCORES && m.s1!==undefined) return false;
     if (myTeams && !myTeams.has(m.a) && !myTeams.has(m.b)) return false;
     return true;
+  }).map(m => {
+    const { d, t } = getMatchDateTimeInTimezone(m, CAL_TZ);
+    return { ...m, d, t };
   });
 
   const byDay = {};
@@ -700,7 +870,8 @@ function renderCal() {
   });
 
   el.innerHTML = h;
-  if (today>=(MATCHES[0]?.d||'')) {
+  const firstMatchConverted = MATCHES[0] ? getMatchDateTimeInTimezone(MATCHES[0], CAL_TZ).d : '';
+  if (today>=firstMatchConverted) {
     const todayEl = el.querySelector('.today-pill');
     if (todayEl) setTimeout(()=>todayEl.closest('.day-block').scrollIntoView({behavior:'smooth',block:'start'}),80);
   }
@@ -711,7 +882,12 @@ function renderCal() {
 ══════════════════════════════════════════════════ */
 function renderResults() {
   const el = document.getElementById('page-results');
-  const scored = MATCHES.filter(m=>m.s1!==undefined).sort((a,b)=>b.d.localeCompare(a.d)||b.t.localeCompare(a.t));
+  const scored = MATCHES.filter(m=>m.s1!==undefined)
+    .map(m => {
+      const { d, t } = getMatchDateTimeInTimezone(m, CAL_TZ);
+      return { ...m, d, t };
+    })
+    .sort((a,b)=>b.d.localeCompare(a.d)||b.t.localeCompare(a.t));
 
   let h = `<p class="results-intro">${scored.length} result${scored.length!==1?'s':''} · sourced from <a href="https://github.com/openfootball/worldcup.json" target="_blank">openfootball</a> · <a href="#" onclick="doRefresh();return false;">refresh now</a></p>`;
 
@@ -797,6 +973,10 @@ function render() {
    INIT
 ══════════════════════════════════════════════════ */
 (function init() {
+  // Set initial timezone select value
+  const sel = document.getElementById('tz-select');
+  if (sel) sel.value = CAL_TZ;
+
   // Populate modal with default names so it's ready
   ['','','',''].forEach(n => addMemberField(n));
   randomSeed();
