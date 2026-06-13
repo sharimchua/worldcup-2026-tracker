@@ -114,7 +114,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .cal-toolbar select{font-size:13px;font-family:'DM Sans',sans-serif;height:34px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--ink);cursor:pointer}
 .cal-toolbar label{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;height:34px;padding:0 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card)}
 
-.day-block{margin-bottom:1.5rem}
+.day-block{margin-bottom:1.5rem;scroll-margin-top:110px}
 .day-heading{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.06em;color:var(--ink-2);margin-bottom:8px;display:flex;align-items:center;gap:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
 .today-pill{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;background:var(--green);color:#fff;padding:2px 8px;border-radius:20px}
 .played-count{font-size:11px;color:var(--ink-3);font-family:'DM Sans',sans-serif;font-weight:400;margin-left:auto}
@@ -1046,12 +1046,30 @@ function copyURL(el) {
 ══════════════════════════════════════════════════ */
 let CAL_MEMBER='all', CAL_ROUND='all', CAL_SCORES=true;
 
-function renderCal() {
+function renderCal(forceScroll = false) {
   const el = document.getElementById('page-cal');
   const today = getTodayInTimezone(CAL_TZ);
   const out = computeKnockedOut();
   const myTeams = CAL_MEMBER!=='all' ? new Set(ALLOC[CAL_MEMBER]||[]) : null;
-  const rounds = [...new Set(MATCHES.map(m=>m.r))];
+  const rounds = [...new Set(MATCHES.map(m=>m.r))].sort((a, b) => {
+    const getRoundOrder = (r) => {
+      const clean = r.toLowerCase().trim();
+      if (clean.startsWith('matchday ')) {
+        const num = parseInt(clean.substring(9), 10);
+        return isNaN(num) ? 0 : num;
+      }
+      const order = {
+        'round of 32': 18,
+        'round of 16': 19,
+        'quarter-final': 20,
+        'semi-final': 21,
+        'match for third place': 22,
+        'final': 23
+      };
+      return order[clean] !== undefined ? order[clean] : 99;
+    };
+    return getRoundOrder(a) - getRoundOrder(b);
+  });
 
   let visible = MATCHES.filter(m => {
     if (CAL_ROUND!=='all' && m.r!==CAL_ROUND) return false;
@@ -1110,11 +1128,11 @@ function renderCal() {
       const spoilerClass = (scored && !isRevealed) ? ' spoiler-hidden' : '';
       const revealAttr = (scored && !isRevealed) ? `onclick="revealMatch('${matchKey}')" style="cursor:pointer" title="Click to reveal"` : '';
 
-      const goals1Html = m.goals1 && m.goals1.length > 0
-        ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+      const goals1Html = m.goals1 && m.goals1.length > 0 && isRevealed
+        ? `<div class="team-scorers">⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
         : '';
-      const goals2Html = m.goals2 && m.goals2.length > 0
-        ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+      const goals2Html = m.goals2 && m.goals2.length > 0 && isRevealed
+        ? `<div class="team-scorers">⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
         : '';
 
       const statusText = scored ? (m.status || 'FT') : m.t;
@@ -1137,7 +1155,7 @@ function renderCal() {
             </div>
             <div class="team-score-wrapper" ${revealAttr}>
               <span class="team-score">${scored?m.s1:''}</span>
-              ${scored && m.p1 !== undefined ? `<span class="pens-score">(${m.p1})</span>` : ''}
+              ${scored && m.p1 !== undefined && isRevealed ? `<span class="pens-score">(${m.p1})</span>` : ''}
             </div>
           </div>
           ${goals1Html}
@@ -1149,7 +1167,7 @@ function renderCal() {
             </div>
             <div class="team-score-wrapper" ${revealAttr}>
               <span class="team-score">${scored?m.s2:''}</span>
-              ${scored && m.p2 !== undefined ? `<span class="pens-score">(${m.p2})</span>` : ''}
+              ${scored && m.p2 !== undefined && isRevealed ? `<span class="pens-score">(${m.p2})</span>` : ''}
             </div>
           </div>
           ${goals2Html}
@@ -1164,7 +1182,7 @@ function renderCal() {
 
   el.innerHTML = h;
   const firstMatchConverted = MATCHES[0] ? getMatchDateTimeInTimezone(MATCHES[0], CAL_TZ).d : '';
-  if (today>=firstMatchConverted) {
+  if (forceScroll && today>=firstMatchConverted) {
     const todayEl = el.querySelector('.today-pill');
     if (todayEl) setTimeout(()=>todayEl.closest('.day-block').scrollIntoView({behavior:'smooth',block:'start'}),80);
   }
@@ -1210,11 +1228,11 @@ function renderResults() {
         const spoilerClass = !isRevealed ? ' spoiler-hidden' : '';
         const revealAttr = !isRevealed ? `onclick="revealMatch('${matchKey}')" style="cursor:pointer" title="Click to reveal"` : '';
 
-        const goals1Html = m.goals1 && m.goals1.length > 0
-          ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+        const goals1Html = m.goals1 && m.goals1.length > 0 && isRevealed
+          ? `<div class="team-scorers">⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
           : '';
-        const goals2Html = m.goals2 && m.goals2.length > 0
-          ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+        const goals2Html = m.goals2 && m.goals2.length > 0 && isRevealed
+          ? `<div class="team-scorers">⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
           : '';
 
         const statusText = m.status || 'FT';
@@ -1237,7 +1255,7 @@ function renderResults() {
               </div>
               <div class="team-score-wrapper" ${revealAttr}>
                 <span class="team-score">${m.s1}</span>
-                ${m.p1 !== undefined ? `<span class="pens-score">(${m.p1})</span>` : ''}
+                ${m.p1 !== undefined && isRevealed ? `<span class="pens-score">(${m.p1})</span>` : ''}
               </div>
             </div>
             ${goals1Html}
@@ -1249,7 +1267,7 @@ function renderResults() {
               </div>
               <div class="team-score-wrapper" ${revealAttr}>
                 <span class="team-score">${m.s2}</span>
-                ${m.p2 !== undefined ? `<span class="pens-score">(${m.p2})</span>` : ''}
+                ${m.p2 !== undefined && isRevealed ? `<span class="pens-score">(${m.p2})</span>` : ''}
               </div>
             </div>
             ${goals2Html}
@@ -1400,7 +1418,11 @@ function showTab(t) {
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('page-'+t).classList.add('on');
   document.querySelectorAll('.nav-tab')[['dash','cal','results','groups'].indexOf(t)].classList.add('on');
-  render();
+  if (t === 'cal') {
+    renderCal(true);
+  } else {
+    render();
+  }
 }
 
 function render() {
