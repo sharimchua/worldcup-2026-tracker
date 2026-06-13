@@ -317,6 +317,77 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   color: var(--gold);
 }
 
+/* Spoiler & Blur Styles */
+.match-card.spoiler-hidden .team-score {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.6;
+}
+.match-card.spoiler-hidden .pens-score {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.match-card.spoiler-hidden .team-scorers {
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.match-card .team-score,
+.match-card .pens-score,
+.match-card .team-scorers {
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Spoilers Control Button (Light Toolbar Style) */
+.spoilers-btn {
+  font-size: 12px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink-2);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.spoilers-btn:hover {
+  background: var(--green-l);
+  border-color: var(--green);
+  color: var(--green-d);
+}
+
+/* Individual Card Reveal Button */
+.reveal-btn {
+  background: var(--green-l);
+  color: var(--green-d);
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.reveal-btn:hover {
+  background: var(--green);
+  color: white;
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
   .metrics{grid-template-columns:repeat(2,1fr)}
@@ -413,6 +484,47 @@ const VENUE_OFFSETS = {
 };
 
 let CAL_TZ = localStorage.getItem('wc_timezone') || 'local-match';
+
+/* ══════════════════════════════════════════════════
+   SPOILER / BLUR STATE
+   ══════════════════════════════════════════════════ */
+let REVEALED_MATCHES = [];
+try {
+  REVEALED_MATCHES = JSON.parse(localStorage.getItem('wc_revealed_matches') || '[]');
+} catch(e) {
+  console.error("Failed to parse wc_revealed_matches", e);
+}
+const REVEALED_SET = new Set(REVEALED_MATCHES);
+let REVEAL_ALL = localStorage.getItem('wc_reveal_all') === 'true';
+
+function getMatchKey(m) {
+  return `${m.d}_${m.a}_${m.b}`.replace(/\s+/g, '_');
+}
+
+function isMatchRevealed(m) {
+  if (REVEAL_ALL) return true;
+  return REVEALED_SET.has(getMatchKey(m));
+}
+
+function revealMatch(key) {
+  REVEALED_SET.add(key);
+  localStorage.setItem('wc_revealed_matches', JSON.stringify([...REVEALED_SET]));
+  render();
+}
+
+function revealAllScores() {
+  REVEAL_ALL = true;
+  localStorage.setItem('wc_reveal_all', 'true');
+  render();
+}
+
+function hideAllScores() {
+  REVEAL_ALL = false;
+  localStorage.setItem('wc_reveal_all', 'false');
+  REVEALED_SET.clear();
+  localStorage.removeItem('wc_revealed_matches');
+  render();
+}
 
 function parseMatchDateTime(dateStr, timeStr, venue) {
   let timeOnly = "12:00";
@@ -966,6 +1078,8 @@ function renderCal() {
       <option value="all"${CAL_ROUND==='all'?'selected':''}>All rounds</option>${rndOpts}
     </select>
     <label><input type="checkbox" ${CAL_SCORES?'checked':''} onchange="CAL_SCORES=this.checked;renderCal()"> Show played</label>
+    <button class="spoilers-btn" onclick="revealAllScores()">👁️ Reveal All</button>
+    <button class="spoilers-btn" onclick="hideAllScores()">🙈 Hide All</button>
   </div>`;
 
   if (!days.length) { h+=`<div class="empty"><strong>No matches</strong>Adjust the filters above.</div>`; el.innerHTML=h; return; }
@@ -991,20 +1105,28 @@ function renderCal() {
       const isMyMatch = myTeams&&(myTeams.has(m.a)||myTeams.has(m.b));
       const ko1=out.has(m.a), ko2=out.has(m.b);
 
+      const matchKey = getMatchKey(m);
+      const isRevealed = !scored || isMatchRevealed(m);
+      const spoilerClass = (scored && !isRevealed) ? ' spoiler-hidden' : '';
+      const revealAttr = (scored && !isRevealed) ? `onclick="revealMatch('${matchKey}')" style="cursor:pointer" title="Click to reveal"` : '';
+
       const goals1Html = m.goals1 && m.goals1.length > 0
-        ? `<div class="team-scorers">⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+        ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
         : '';
       const goals2Html = m.goals2 && m.goals2.length > 0
-        ? `<div class="team-scorers">⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+        ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
         : '';
 
       const statusText = scored ? (m.status || 'FT') : m.t;
       const statusClass = scored ? 'status-final' : '';
+      const statusHtml = (scored && !isRevealed)
+        ? `<button class="reveal-btn" onclick="revealMatch('${matchKey}')">👁️ Reveal</button>`
+        : `<span class="match-time-status ${statusClass}">${statusText}</span>`;
 
-      h += `<div class="match-card${isMyMatch?' my-match':''}">
+      h += `<div class="match-card${isMyMatch?' my-match':''}${spoilerClass}">
         <div class="match-card-header">
           <span class="round-badge">${m.g?'Group '+m.g:m.r.replace('Match for third place','3rd place')}</span>
-          <span class="match-time-status ${statusClass}">${statusText}</span>
+          ${statusHtml}
         </div>
         <div class="match-card-body">
           <div class="team-row">
@@ -1013,7 +1135,7 @@ function renderCal() {
               <span class="team-name${ko1?' out':''}">${m.a}</span>
               ${ownerChip(m.a)}
             </div>
-            <div class="team-score-wrapper">
+            <div class="team-score-wrapper" ${revealAttr}>
               <span class="team-score">${scored?m.s1:''}</span>
               ${scored && m.p1 !== undefined ? `<span class="pens-score">(${m.p1})</span>` : ''}
             </div>
@@ -1025,7 +1147,7 @@ function renderCal() {
               <span class="team-name${ko2?' out':''}">${m.b}</span>
               ${ownerChip(m.b)}
             </div>
-            <div class="team-score-wrapper">
+            <div class="team-score-wrapper" ${revealAttr}>
               <span class="team-score">${scored?m.s2:''}</span>
               ${scored && m.p2 !== undefined ? `<span class="pens-score">(${m.p2})</span>` : ''}
             </div>
@@ -1061,7 +1183,15 @@ function renderResults() {
     })
     .sort((a,b)=>b.d.localeCompare(a.d)||b.t.localeCompare(a.t));
 
-  let h = `<p class="results-intro">${scored.length} result${scored.length!==1?'s':''} · sourced from <a href="https://github.com/openfootball/worldcup.json" target="_blank">openfootball</a> · <a href="#" onclick="doRefresh();return false;">refresh now</a></p>`;
+  let h = `<div class="results-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px">
+    <p class="results-intro" style="margin-bottom:0">${scored.length} result${scored.length!==1?'s':''} · sourced from <a href="https://github.com/openfootball/worldcup.json" target="_blank">openfootball</a> · <a href="#" onclick="doRefresh();return false;">refresh now</a></p>`;
+  if (scored.length > 0) {
+    h += `<div style="display:flex;gap:8px">
+      <button class="spoilers-btn" onclick="revealAllScores()">👁️ Reveal All</button>
+      <button class="spoilers-btn" onclick="hideAllScores()">🙈 Hide All</button>
+    </div>`;
+  }
+  h += `</div>`;
 
   if (!scored.length) {
     h += `<div class="empty"><strong>No results yet</strong>The tournament kicks off 11 June 2026. Results appear here automatically — just hit Refresh.</div>`;
@@ -1075,20 +1205,28 @@ function renderResults() {
         const t1=getTeam(m.a), t2=getTeam(m.b);
         const ko1=out.has(m.a), ko2=out.has(m.b);
 
+        const matchKey = getMatchKey(m);
+        const isRevealed = isMatchRevealed(m);
+        const spoilerClass = !isRevealed ? ' spoiler-hidden' : '';
+        const revealAttr = !isRevealed ? `onclick="revealMatch('${matchKey}')" style="cursor:pointer" title="Click to reveal"` : '';
+
         const goals1Html = m.goals1 && m.goals1.length > 0
-          ? `<div class="team-scorers">⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+          ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
           : '';
         const goals2Html = m.goals2 && m.goals2.length > 0
-          ? `<div class="team-scorers">⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+          ? `<div class="team-scorers" ${revealAttr}>⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
           : '';
 
         const statusText = m.status || 'FT';
         const formattedDate = new Date(m.d + 'T12:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        const statusHtml = !isRevealed
+          ? `<button class="reveal-btn" onclick="revealMatch('${matchKey}')">👁️ Reveal</button>`
+          : `<span class="match-time-status status-final">${statusText}</span>`;
 
-        h += `<div class="match-card">
+        h += `<div class="match-card${spoilerClass}">
           <div class="match-card-header">
             <span class="round-badge">${m.g?'Group '+m.g:m.r.replace('Match for third place','3rd place')}</span>
-            <span class="match-time-status status-final">${statusText}</span>
+            ${statusHtml}
           </div>
           <div class="match-card-body">
             <div class="team-row">
@@ -1097,7 +1235,7 @@ function renderResults() {
                 <span class="team-name${ko1?' out':''}">${m.a}</span>
                 ${ownerChip(m.a)}
               </div>
-              <div class="team-score-wrapper">
+              <div class="team-score-wrapper" ${revealAttr}>
                 <span class="team-score">${m.s1}</span>
                 ${m.p1 !== undefined ? `<span class="pens-score">(${m.p1})</span>` : ''}
               </div>
@@ -1109,7 +1247,7 @@ function renderResults() {
                 <span class="team-name${ko2?' out':''}">${m.b}</span>
                 ${ownerChip(m.b)}
               </div>
-              <div class="team-score-wrapper">
+              <div class="team-score-wrapper" ${revealAttr}>
                 <span class="team-score">${m.s2}</span>
                 ${m.p2 !== undefined ? `<span class="pens-score">(${m.p2})</span>` : ''}
               </div>
