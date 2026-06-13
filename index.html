@@ -119,17 +119,154 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .today-pill{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;background:var(--green);color:#fff;padding:2px 8px;border-radius:20px}
 .played-count{font-size:11px;color:var(--ink-3);font-family:'DM Sans',sans-serif;font-weight:400;margin-left:auto}
 
-.match-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;box-shadow:var(--shadow)}
-.match-row.my-match{border-left:3px solid var(--green)}
-.match-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-3);min-width:38px;flex-shrink:0}
-.match-side{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
-.match-side.right{justify-content:flex-end}
-.match-team-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
-.match-team-name.out{opacity:.4;text-decoration:line-through}
-.match-score{font-family:'Bebas Neue',sans-serif;font-size:18px;min-width:46px;text-align:center;color:var(--ink);flex-shrink:0}
-.match-score.tbd{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink-3);font-weight:400}
-.match-venue{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
-.round-pill{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg);color:var(--ink-3);white-space:nowrap;flex-shrink:0}
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.match-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+.match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+.match-card.my-match {
+  border-left: 4px solid var(--green);
+}
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 6px;
+}
+.round-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  background: var(--bg);
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+.match-time-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+.match-time-status.status-final {
+  color: var(--green);
+  font-weight: 600;
+  background: var(--green-l);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+.match-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 22px;
+}
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.team-flag {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.team-flag-placeholder {
+  width: 20px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.team-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.team-name.out {
+  opacity: 0.45;
+  text-decoration: line-through;
+  font-weight: 400;
+}
+.team-score-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.team-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--ink);
+  min-width: 14px;
+  text-align: right;
+}
+.pens-score {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-weight: normal;
+}
+.team-scorers {
+  font-size: 10px;
+  color: var(--ink-3);
+  margin-left: 28px;
+  margin-top: -5px;
+  margin-bottom: 2px;
+  line-height: 1.35;
+  font-style: italic;
+}
+.match-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--bg);
+  padding-top: 6px;
+  margin-top: auto;
+}
+.match-venue {
+  font-size: 10px;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.match-date {
+  font-size: 10px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
 .owner-chip{font-size:10px;padding:1px 6px;border-radius:20px;font-weight:600;flex-shrink:0;white-space:nowrap}
 
 /* ── RESULTS ── */
@@ -137,7 +274,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .results-intro a{color:var(--green);text-decoration:none}
 .results-intro a:hover{text-decoration:underline}
 .round-heading{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.05em;color:var(--ink-2);margin:1.25rem 0 7px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.result-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;box-shadow:var(--shadow)}
 
 /* ── GROUPS ── */
 .groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
@@ -184,9 +320,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
   .metrics{grid-template-columns:repeat(2,1fr)}
-  .match-venue{display:none}
   #data-src{display:none}
-  .match-team-name{max-width:75px}
   .share-url{max-width:160px}
   .hdr-select {max-width: 100px;}
 }
@@ -458,7 +592,7 @@ function norm(n){ return NORM[n]||n; }
 // Embedded schedule — openfootball 2026
 const EMBEDDED=[{"r":"Matchday 1","d":"2026-06-11","t":"13:00","a":"Mexico","b":"South Africa","g":"A","v":"Mexico City"},{"r":"Matchday 1","d":"2026-06-11","t":"20:00","a":"South Korea","b":"Czech Republic","g":"A","v":"Guadalajara (Zapopan)"},{"r":"Matchday 8","d":"2026-06-18","t":"12:00","a":"Czech Republic","b":"South Africa","g":"A","v":"Atlanta"},{"r":"Matchday 8","d":"2026-06-18","t":"19:00","a":"Mexico","b":"South Korea","g":"A","v":"Guadalajara (Zapopan)"},{"r":"Matchday 14","d":"2026-06-24","t":"19:00","a":"Czech Republic","b":"Mexico","g":"A","v":"Mexico City"},{"r":"Matchday 14","d":"2026-06-24","t":"19:00","a":"South Africa","b":"South Korea","g":"A","v":"Monterrey (Guadalupe)"},{"r":"Matchday 2","d":"2026-06-12","t":"15:00","a":"Canada","b":"Bosnia & Herzegovina","g":"B","v":"Toronto"},{"r":"Matchday 3","d":"2026-06-13","t":"12:00","a":"Qatar","b":"Switzerland","g":"B","v":"San Francisco Bay Area (Santa Clara)"},{"r":"Matchday 8","d":"2026-06-18","t":"12:00","a":"Switzerland","b":"Bosnia & Herzegovina","g":"B","v":"Los Angeles (Inglewood)"},{"r":"Matchday 8","d":"2026-06-18","t":"15:00","a":"Canada","b":"Qatar","g":"B","v":"Vancouver"},{"r":"Matchday 14","d":"2026-06-24","t":"12:00","a":"Switzerland","b":"Canada","g":"B","v":"Vancouver"},{"r":"Matchday 14","d":"2026-06-24","t":"12:00","a":"Bosnia & Herzegovina","b":"Qatar","g":"B","v":"Seattle"},{"r":"Matchday 3","d":"2026-06-13","t":"18:00","a":"Brazil","b":"Morocco","g":"C","v":"New York/New Jersey (East Rutherford)"},{"r":"Matchday 3","d":"2026-06-13","t":"21:00","a":"Haiti","b":"Scotland","g":"C","v":"Boston (Foxborough)"},{"r":"Matchday 9","d":"2026-06-19","t":"18:00","a":"Scotland","b":"Morocco","g":"C","v":"Boston (Foxborough)"},{"r":"Matchday 9","d":"2026-06-19","t":"20:30","a":"Brazil","b":"Haiti","g":"C","v":"Philadelphia"},{"r":"Matchday 14","d":"2026-06-24","t":"18:00","a":"Scotland","b":"Brazil","g":"C","v":"Miami (Miami Gardens)"},{"r":"Matchday 14","d":"2026-06-24","t":"18:00","a":"Morocco","b":"Haiti","g":"C","v":"Atlanta"},{"r":"Matchday 2","d":"2026-06-12","t":"18:00","a":"USA","b":"Paraguay","g":"D","v":"Los Angeles (Inglewood)"},{"r":"Matchday 3","d":"2026-06-13","t":"21:00","a":"Australia","b":"Turkey","g":"D","v":"Vancouver"},{"r":"Matchday 9","d":"2026-06-19","t":"12:00","a":"USA","b":"Australia","g":"D","v":"Seattle"},{"r":"Matchday 9","d":"2026-06-19","t":"20:00","a":"Turkey","b":"Paraguay","g":"D","v":"San Francisco Bay Area (Santa Clara)"},{"r":"Matchday 15","d":"2026-06-25","t":"19:00","a":"Turkey","b":"USA","g":"D","v":"Los Angeles (Inglewood)"},{"r":"Matchday 15","d":"2026-06-25","t":"19:00","a":"Paraguay","b":"Australia","g":"D","v":"San Francisco Bay Area (Santa Clara)"},{"r":"Matchday 4","d":"2026-06-14","t":"12:00","a":"Germany","b":"Curaçao","g":"E","v":"Houston"},{"r":"Matchday 4","d":"2026-06-14","t":"19:00","a":"Ivory Coast","b":"Ecuador","g":"E","v":"Philadelphia"},{"r":"Matchday 10","d":"2026-06-20","t":"16:00","a":"Germany","b":"Ivory Coast","g":"E","v":"Toronto"},{"r":"Matchday 10","d":"2026-06-20","t":"19:00","a":"Ecuador","b":"Curaçao","g":"E","v":"Kansas City"},{"r":"Matchday 15","d":"2026-06-25","t":"16:00","a":"Curaçao","b":"Ivory Coast","g":"E","v":"Philadelphia"},{"r":"Matchday 15","d":"2026-06-25","t":"16:00","a":"Ecuador","b":"Germany","g":"E","v":"New York/New Jersey (East Rutherford)"},{"r":"Matchday 4","d":"2026-06-14","t":"15:00","a":"Netherlands","b":"Japan","g":"F","v":"Dallas (Arlington)"},{"r":"Matchday 4","d":"2026-06-14","t":"20:00","a":"Sweden","b":"Tunisia","g":"F","v":"Monterrey (Guadalupe)"},{"r":"Matchday 10","d":"2026-06-20","t":"12:00","a":"Netherlands","b":"Sweden","g":"F","v":"Houston"},{"r":"Matchday 10","d":"2026-06-20","t":"22:00","a":"Tunisia","b":"Japan","g":"F","v":"Monterrey (Guadalupe)"},{"r":"Matchday 15","d":"2026-06-25","t":"18:00","a":"Japan","b":"Sweden","g":"F","v":"Dallas (Arlington)"},{"r":"Matchday 15","d":"2026-06-25","t":"18:00","a":"Tunisia","b":"Netherlands","g":"F","v":"Kansas City"},{"r":"Matchday 5","d":"2026-06-15","t":"12:00","a":"Belgium","b":"Egypt","g":"G","v":"Seattle"},{"r":"Matchday 5","d":"2026-06-15","t":"18:00","a":"Iran","b":"New Zealand","g":"G","v":"Los Angeles (Inglewood)"},{"r":"Matchday 11","d":"2026-06-21","t":"12:00","a":"Belgium","b":"Iran","g":"G","v":"Los Angeles (Inglewood)"},{"r":"Matchday 11","d":"2026-06-21","t":"18:00","a":"New Zealand","b":"Egypt","g":"G","v":"Vancouver"},{"r":"Matchday 16","d":"2026-06-26","t":"20:00","a":"Egypt","b":"Iran","g":"G","v":"Seattle"},{"r":"Matchday 16","d":"2026-06-26","t":"20:00","a":"New Zealand","b":"Belgium","g":"G","v":"Vancouver"},{"r":"Matchday 5","d":"2026-06-15","t":"12:00","a":"Spain","b":"Cape Verde","g":"H","v":"Atlanta"},{"r":"Matchday 5","d":"2026-06-15","t":"18:00","a":"Saudi Arabia","b":"Uruguay","g":"H","v":"Miami (Miami Gardens)"},{"r":"Matchday 11","d":"2026-06-21","t":"12:00","a":"Spain","b":"Saudi Arabia","g":"H","v":"Atlanta"},{"r":"Matchday 11","d":"2026-06-21","t":"18:00","a":"Uruguay","b":"Cape Verde","g":"H","v":"Miami (Miami Gardens)"},{"r":"Matchday 16","d":"2026-06-26","t":"19:00","a":"Cape Verde","b":"Saudi Arabia","g":"H","v":"Houston"},{"r":"Matchday 16","d":"2026-06-26","t":"18:00","a":"Uruguay","b":"Spain","g":"H","v":"Guadalajara (Zapopan)"},{"r":"Matchday 6","d":"2026-06-16","t":"15:00","a":"France","b":"Senegal","g":"I","v":"New York/New Jersey (East Rutherford)"},{"r":"Matchday 6","d":"2026-06-16","t":"18:00","a":"Iraq","b":"Norway","g":"I","v":"Boston (Foxborough)"},{"r":"Matchday 12","d":"2026-06-22","t":"17:00","a":"France","b":"Iraq","g":"I","v":"Philadelphia"},{"r":"Matchday 12","d":"2026-06-22","t":"20:00","a":"Norway","b":"Senegal","g":"I","v":"New York/New Jersey (East Rutherford)"},{"r":"Matchday 16","d":"2026-06-26","t":"15:00","a":"Norway","b":"France","g":"I","v":"Boston (Foxborough)"},{"r":"Matchday 16","d":"2026-06-26","t":"15:00","a":"Senegal","b":"Iraq","g":"I","v":"Toronto"},{"r":"Matchday 6","d":"2026-06-16","t":"20:00","a":"Argentina","b":"Algeria","g":"J","v":"Kansas City"},{"r":"Matchday 6","d":"2026-06-16","t":"21:00","a":"Austria","b":"Jordan","g":"J","v":"San Francisco Bay Area (Santa Clara)"},{"r":"Matchday 12","d":"2026-06-22","t":"12:00","a":"Argentina","b":"Austria","g":"J","v":"Dallas (Arlington)"},{"r":"Matchday 12","d":"2026-06-22","t":"20:00","a":"Jordan","b":"Algeria","g":"J","v":"San Francisco Bay Area (Santa Clara)"},{"r":"Matchday 17","d":"2026-06-27","t":"21:00","a":"Algeria","b":"Austria","g":"J","v":"Kansas City"},{"r":"Matchday 17","d":"2026-06-27","t":"21:00","a":"Jordan","b":"Argentina","g":"J","v":"Dallas (Arlington)"},{"r":"Matchday 7","d":"2026-06-17","t":"12:00","a":"Portugal","b":"DR Congo","g":"K","v":"Houston"},{"r":"Matchday 7","d":"2026-06-17","t":"20:00","a":"Uzbekistan","b":"Colombia","g":"K","v":"Mexico City"},{"r":"Matchday 13","d":"2026-06-23","t":"12:00","a":"Portugal","b":"Uzbekistan","g":"K","v":"Houston"},{"r":"Matchday 13","d":"2026-06-23","t":"20:00","a":"Colombia","b":"DR Congo","g":"K","v":"Guadalajara (Zapopan)"},{"r":"Matchday 17","d":"2026-06-27","t":"19:30","a":"Colombia","b":"Portugal","g":"K","v":"Miami (Miami Gardens)"},{"r":"Matchday 17","d":"2026-06-27","t":"19:30","a":"DR Congo","b":"Uzbekistan","g":"K","v":"Atlanta"},{"r":"Matchday 7","d":"2026-06-17","t":"15:00","a":"England","b":"Croatia","g":"L","v":"Dallas (Arlington)"},{"r":"Matchday 7","d":"2026-06-17","t":"19:00","a":"Ghana","b":"Panama","g":"L","v":"Toronto"},{"r":"Matchday 13","d":"2026-06-23","t":"16:00","a":"England","b":"Ghana","g":"L","v":"Boston (Foxborough)"},{"r":"Matchday 13","d":"2026-06-23","t":"19:00","a":"Panama","b":"Croatia","g":"L","v":"Toronto"},{"r":"Matchday 17","d":"2026-06-27","t":"17:00","a":"Panama","b":"England","g":"L","v":"New York/New Jersey (East Rutherford)"},{"r":"Matchday 17","d":"2026-06-27","t":"17:00","a":"Croatia","b":"Ghana","g":"L","v":"Philadelphia"},{"r":"Round of 32","d":"2026-06-28","t":"12:00","a":"2A","b":"2B","g":"","v":"Los Angeles (Inglewood)"},{"r":"Round of 32","d":"2026-06-29","t":"16:30","a":"1E","b":"3A/B/C/D/F","g":"","v":"Boston (Foxborough)"},{"r":"Round of 32","d":"2026-06-29","t":"19:00","a":"1F","b":"2C","g":"","v":"Monterrey (Guadalupe)"},{"r":"Round of 32","d":"2026-06-29","t":"12:00","a":"1C","b":"2F","g":"","v":"Houston"},{"r":"Round of 32","d":"2026-06-30","t":"17:00","a":"1I","b":"3C/D/F/G/H","g":"","v":"New York/New Jersey (East Rutherford)"},{"r":"Round of 32","d":"2026-06-30","t":"12:00","a":"2E","b":"2I","g":"","v":"Dallas (Arlington)"},{"r":"Round of 32","d":"2026-06-30","t":"19:00","a":"1A","b":"3C/E/F/H/I","g":"","v":"Mexico City"},{"r":"Round of 32","d":"2026-07-01","t":"12:00","a":"1L","b":"3E/H/I/J/K","g":"","v":"Atlanta"},{"r":"Round of 32","d":"2026-07-01","t":"17:00","a":"1D","b":"3B/E/F/I/J","g":"","v":"San Francisco Bay Area (Santa Clara)"},{"r":"Round of 32","d":"2026-07-01","t":"13:00","a":"1G","b":"3A/E/H/I/J","g":"","v":"Seattle"},{"r":"Round of 32","d":"2026-07-02","t":"19:00","a":"2K","b":"2L","g":"","v":"Toronto"},{"r":"Round of 32","d":"2026-07-02","t":"12:00","a":"1H","b":"2J","g":"","v":"Los Angeles (Inglewood)"},{"r":"Round of 32","d":"2026-07-02","t":"20:00","a":"1B","b":"3E/F/G/I/J","g":"","v":"Vancouver"},{"r":"Round of 32","d":"2026-07-03","t":"18:00","a":"1J","b":"2H","g":"","v":"Miami (Miami Gardens)"},{"r":"Round of 32","d":"2026-07-03","t":"20:30","a":"1K","b":"3D/E/I/J/L","g":"","v":"Kansas City"},{"r":"Round of 32","d":"2026-07-03","t":"13:00","a":"2D","b":"2G","g":"","v":"Dallas (Arlington)"},{"r":"Round of 16","d":"2026-07-04","t":"17:00","a":"W74","b":"W77","g":"","v":"Philadelphia"},{"r":"Round of 16","d":"2026-07-04","t":"12:00","a":"W73","b":"W75","g":"","v":"Houston"},{"r":"Round of 16","d":"2026-07-05","t":"16:00","a":"W76","b":"W78","g":"","v":"New York/New Jersey (East Rutherford)"},{"r":"Round of 16","d":"2026-07-05","t":"18:00","a":"W79","b":"W80","g":"","v":"Mexico City"},{"r":"Round of 16","d":"2026-07-06","t":"14:00","a":"W83","b":"W84","g":"","v":"Dallas (Arlington)"},{"r":"Round of 16","d":"2026-07-06","t":"17:00","a":"W81","b":"W82","g":"","v":"Seattle"},{"r":"Round of 16","d":"2026-07-07","t":"12:00","a":"W86","b":"W88","g":"","v":"Atlanta"},{"r":"Round of 16","d":"2026-07-07","t":"13:00","a":"W85","b":"W87","g":"","v":"Vancouver"},{"r":"Quarter-final","d":"2026-07-09","t":"16:00","a":"W89","b":"W90","g":"","v":"Boston (Foxborough)"},{"r":"Quarter-final","d":"2026-07-10","t":"12:00","a":"W93","b":"W94","g":"","v":"Los Angeles (Inglewood)"},{"r":"Quarter-final","d":"2026-07-11","t":"17:00","a":"W91","b":"W92","g":"","v":"Miami (Miami Gardens)"},{"r":"Quarter-final","d":"2026-07-11","t":"20:00","a":"W95","b":"W96","g":"","v":"Kansas City"},{"r":"Semi-final","d":"2026-07-14","t":"14:00","a":"W97","b":"W98","g":"","v":"Dallas (Arlington)"},{"r":"Semi-final","d":"2026-07-15","t":"15:00","a":"W99","b":"W100","g":"","v":"Atlanta"},{"r":"Match for third place","d":"2026-07-18","t":"17:00","a":"L101","b":"L102","g":"","v":"Miami (Miami Gardens)"},{"r":"Final","d":"2026-07-19","t":"15:00","a":"W101","b":"W102","g":"","v":"New York/New Jersey (East Rutherford)"}];
 
-let MATCHES = EMBEDDED.map(m=>({...m,a:norm(m.a),b:norm(m.b)}));
+let MATCHES = EMBEDDED.map(m=>({...m,a:norm(m.a),b:norm(m.b),goals1:[],goals2:[],status:null}));
 
 /* ══════════════════════════════════════════════════
    SEEDED PRNG  (mulberry32)
@@ -629,6 +763,9 @@ async function doRefresh() {
       a:norm(m.team1), b:norm(m.team2),
       g:(m.group||'').replace('Group ',''),
       v:m.ground||'',
+      goals1: m.goals1 || [],
+      goals2: m.goals2 || [],
+      status: m.score && m.score.ft ? (m.score.p ? 'PEN' : (m.score.et ? 'AET' : 'FT')) : null,
       ...(m.score && m.score.ft ? {
         s1: m.score.et ? m.score.et[0] : m.score.ft[0],
         s2: m.score.et ? m.score.et[1] : m.score.ft[1],
@@ -845,33 +982,62 @@ function renderCal() {
         ${label}
         ${isToday?'<span class="today-pill">TODAY</span>':''}
         ${isPast&&!isToday?`<span class="played-count">${playedCount}/${ms.length} played</span>`:''}
-      </div>`;
+      </div>
+      <div class="matches-grid">`;
 
     ms.forEach(m => {
       const scored = m.s1!==undefined;
       const t1=getTeam(m.a), t2=getTeam(m.b);
-      const o1=getOwner(m.a), o2=getOwner(m.b);
       const isMyMatch = myTeams&&(myTeams.has(m.a)||myTeams.has(m.b));
       const ko1=out.has(m.a), ko2=out.has(m.b);
 
-      h += `<div class="match-row${scored?' scored':''}${isMyMatch?' my-match':''}">
-        <span class="match-time">${m.t}</span>
-        <div class="match-side">
-          <span style="font-size:16px">${t1?t1.flag:''}</span>
-          <span class="match-team-name${ko1?' out':''}">${m.a}</span>
-          ${ownerChip(m.a)}
+      const goals1Html = m.goals1 && m.goals1.length > 0
+        ? `<div class="team-scorers">⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+        : '';
+      const goals2Html = m.goals2 && m.goals2.length > 0
+        ? `<div class="team-scorers">⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+        : '';
+
+      const statusText = scored ? (m.status || 'FT') : m.t;
+      const statusClass = scored ? 'status-final' : '';
+
+      h += `<div class="match-card${isMyMatch?' my-match':''}">
+        <div class="match-card-header">
+          <span class="round-badge">${m.g?'Group '+m.g:m.r.replace('Match for third place','3rd place')}</span>
+          <span class="match-time-status ${statusClass}">${statusText}</span>
         </div>
-        <div class="match-score${scored?'':' tbd'}">${scored?m.s1+'–'+m.s2:'vs'}</div>
-        <div class="match-side right">
-          ${ownerChip(m.b)}
-          <span class="match-team-name${ko2?' out':''}">${m.b}</span>
-          <span style="font-size:16px">${t2?t2.flag:''}</span>
+        <div class="match-card-body">
+          <div class="team-row">
+            <div class="team-info">
+              ${t1 ? `<span class="team-flag">${t1.flag}</span>` : `<span class="team-flag-placeholder"></span>`}
+              <span class="team-name${ko1?' out':''}">${m.a}</span>
+              ${ownerChip(m.a)}
+            </div>
+            <div class="team-score-wrapper">
+              <span class="team-score">${scored?m.s1:''}</span>
+              ${scored && m.p1 !== undefined ? `<span class="pens-score">(${m.p1})</span>` : ''}
+            </div>
+          </div>
+          ${goals1Html}
+          <div class="team-row">
+            <div class="team-info">
+              ${t2 ? `<span class="team-flag">${t2.flag}</span>` : `<span class="team-flag-placeholder"></span>`}
+              <span class="team-name${ko2?' out':''}">${m.b}</span>
+              ${ownerChip(m.b)}
+            </div>
+            <div class="team-score-wrapper">
+              <span class="team-score">${scored?m.s2:''}</span>
+              ${scored && m.p2 !== undefined ? `<span class="pens-score">(${m.p2})</span>` : ''}
+            </div>
+          </div>
+          ${goals2Html}
         </div>
-        <span class="match-venue">${m.v}</span>
-        <span class="round-pill">${m.g?'Grp '+m.g:m.r.replace('Match for third place','3rd place')}</span>
+        <div class="match-card-footer">
+          <span class="match-venue">📍 ${m.v || 'TBD'}</span>
+        </div>
       </div>`;
     });
-    h += `</div>`;
+    h += `</div></div>`;
   });
 
   el.innerHTML = h;
@@ -887,6 +1053,7 @@ function renderCal() {
 ══════════════════════════════════════════════════ */
 function renderResults() {
   const el = document.getElementById('page-results');
+  const out = computeKnockedOut();
   const scored = MATCHES.filter(m=>m.s1!==undefined)
     .map(m => {
       const { d, t } = getMatchDateTimeInTimezone(m, CAL_TZ);
@@ -903,23 +1070,59 @@ function renderResults() {
     scored.forEach(m=>{ if(!byRound[m.r]) byRound[m.r]=[]; byRound[m.r].push(m); });
     Object.entries(byRound).forEach(([round,ms])=>{
       h += `<div class="round-heading">${round}</div>`;
+      h += `<div class="matches-grid">`;
       ms.forEach(m=>{
         const t1=getTeam(m.a), t2=getTeam(m.b);
-        h += `<div class="result-row">
-          <div class="match-side" style="flex:1">
-            <span style="font-size:15px">${t1?t1.flag:''}</span>
-            <span class="match-team-name">${m.a}</span>
-            ${ownerChip(m.a)}
+        const ko1=out.has(m.a), ko2=out.has(m.b);
+
+        const goals1Html = m.goals1 && m.goals1.length > 0
+          ? `<div class="team-scorers">⚽ ${m.goals1.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+          : '';
+        const goals2Html = m.goals2 && m.goals2.length > 0
+          ? `<div class="team-scorers">⚽ ${m.goals2.map(g => `${g.name} (${g.minute}')`).join(', ')}</div>`
+          : '';
+
+        const statusText = m.status || 'FT';
+        const formattedDate = new Date(m.d + 'T12:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+
+        h += `<div class="match-card">
+          <div class="match-card-header">
+            <span class="round-badge">${m.g?'Group '+m.g:m.r.replace('Match for third place','3rd place')}</span>
+            <span class="match-time-status status-final">${statusText}</span>
           </div>
-          <div class="match-score">${m.s1}–${m.s2}</div>
-          <div class="match-side right" style="flex:1">
-            ${ownerChip(m.b)}
-            <span class="match-team-name">${m.b}</span>
-            <span style="font-size:15px">${t2?t2.flag:''}</span>
+          <div class="match-card-body">
+            <div class="team-row">
+              <div class="team-info">
+                ${t1 ? `<span class="team-flag">${t1.flag}</span>` : `<span class="team-flag-placeholder"></span>`}
+                <span class="team-name${ko1?' out':''}">${m.a}</span>
+                ${ownerChip(m.a)}
+              </div>
+              <div class="team-score-wrapper">
+                <span class="team-score">${m.s1}</span>
+                ${m.p1 !== undefined ? `<span class="pens-score">(${m.p1})</span>` : ''}
+              </div>
+            </div>
+            ${goals1Html}
+            <div class="team-row">
+              <div class="team-info">
+                ${t2 ? `<span class="team-flag">${t2.flag}</span>` : `<span class="team-flag-placeholder"></span>`}
+                <span class="team-name${ko2?' out':''}">${m.b}</span>
+                ${ownerChip(m.b)}
+              </div>
+              <div class="team-score-wrapper">
+                <span class="team-score">${m.s2}</span>
+                ${m.p2 !== undefined ? `<span class="pens-score">(${m.p2})</span>` : ''}
+              </div>
+            </div>
+            ${goals2Html}
           </div>
-          <span class="match-venue">${m.d}</span>
+          <div class="match-card-footer">
+            <span class="match-venue">📍 ${m.v || 'TBD'}</span>
+            <span class="match-date">${formattedDate}</span>
+          </div>
         </div>`;
       });
+      h += `</div>`;
     });
   }
   el.innerHTML = h;
