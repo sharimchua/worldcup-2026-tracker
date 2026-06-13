@@ -1802,7 +1802,7 @@ function computeStandings() {
   });
 
   MATCHES.forEach(m => {
-    if (m.g && m.s1 !== undefined && m.s2 !== undefined) {
+    if (m.g && m.s1 !== undefined && m.s2 !== undefined && isMatchRevealed(m)) {
       const t1 = standings[m.a];
       const t2 = standings[m.b];
       if (t1 && t2) {
