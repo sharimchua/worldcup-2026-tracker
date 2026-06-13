@@ -457,7 +457,11 @@ async function doRefresh() {
       a:norm(m.team1), b:norm(m.team2),
       g:(m.group||'').replace('Group ',''),
       v:m.ground||'',
-      ...(m.score1!==undefined ? {s1:m.score1,s2:m.score2} : {})
+      ...(m.score && m.score.ft ? {
+        s1: m.score.et ? m.score.et[0] : m.score.ft[0],
+        s2: m.score.et ? m.score.et[1] : m.score.ft[1],
+        ...(m.score.p ? { p1: m.score.p[0], p2: m.score.p[1] } : {})
+      } : {})
     }));
     const scored = MATCHES.filter(m=>m.s1!==undefined).length;
     setStatus(`openfootball · ${MATCHES.length} matches · ${scored} results · ${new Date().toLocaleTimeString()}`);
