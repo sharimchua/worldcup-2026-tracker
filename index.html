@@ -667,7 +667,6 @@ try {
   console.error("Failed to parse wc_revealed_matches", e);
 }
 const REVEALED_SET = new Set(REVEALED_MATCHES);
-let REVEAL_ALL = localStorage.getItem('wc_reveal_all') === 'true';
 
 function getMatchKey(m) {
   const dateStr = m.od || m.d;
@@ -675,7 +674,6 @@ function getMatchKey(m) {
 }
 
 function isMatchRevealed(m) {
-  if (REVEAL_ALL) return true;
   return REVEALED_SET.has(getMatchKey(m));
 }
 
@@ -686,16 +684,19 @@ function revealMatch(key) {
 }
 
 function revealAllScores() {
-  REVEAL_ALL = true;
-  localStorage.setItem('wc_reveal_all', 'true');
+  MATCHES.forEach(m => {
+    if (m.s1 !== undefined) {
+      REVEALED_SET.add(getMatchKey(m));
+    }
+  });
+  localStorage.setItem('wc_revealed_matches', JSON.stringify([...REVEALED_SET]));
   render();
 }
 
 function hideAllScores() {
-  REVEAL_ALL = false;
-  localStorage.setItem('wc_reveal_all', 'false');
   REVEALED_SET.clear();
   localStorage.removeItem('wc_revealed_matches');
+  localStorage.removeItem('wc_reveal_all');
   render();
 }
 
