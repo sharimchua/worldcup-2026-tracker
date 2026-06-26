@@ -1011,6 +1011,11 @@ function computeKnockedOut() {
     Object.entries(groupTeams).forEach(([g, teams]) => {
       const played = groupMatchdays[g] || 0;
       if (played < 6) return; // group not complete or not fully revealed yet
+      
+      // Do not eliminate teams until we see at least 2 from this group advance
+      const advancers = teams.filter(name => advanced.has(name));
+      if (advancers.length < 2) return;
+
       teams.forEach(name => { if (!advanced.has(name)) out.add(name); });
     });
   }
