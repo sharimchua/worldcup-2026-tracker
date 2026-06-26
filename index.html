@@ -1008,6 +1008,9 @@ function computeKnockedOut() {
       if (m.s1 !== undefined && isMatchRevealed(m)) groupMatchdays[m.g]++;
     });
 
+    const standings = computeStandings();
+    const allThirdPlaceMapped = !MATCHES.some(m => m.r === 'Round of 32' && (String(m.a).startsWith('3') || String(m.b).startsWith('3')));
+
     Object.entries(groupTeams).forEach(([g, teams]) => {
       const played = groupMatchdays[g] || 0;
       if (played < 6) return; // group not complete or not fully revealed yet
@@ -1016,7 +1019,22 @@ function computeKnockedOut() {
       const advancers = teams.filter(name => advanced.has(name));
       if (advancers.length < 2) return;
 
-      teams.forEach(name => { if (!advanced.has(name)) out.add(name); });
+      const groupStandings = teams.map(t => standings[t]);
+      groupStandings.sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.gd !== a.gd) return b.gd - a.gd;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        return a.name.localeCompare(b.name);
+      });
+
+      // 4th place is always out
+      out.add(groupStandings[3].name);
+
+      // 3rd place is out only if they haven't advanced and all 3rd place slots are filled
+      const thirdPlace = groupStandings[2].name;
+      if (!advanced.has(thirdPlace) && allThirdPlaceMapped) {
+        out.add(thirdPlace);
+      }
     });
   }
 
